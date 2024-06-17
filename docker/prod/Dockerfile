@@ -14,8 +14,10 @@ RUN go build -o dist ./cmd
 
 FROM debian:bookworm-slim
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt update
-RUN apt install -y calibre
+RUN apt update && apt install -y calibre && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /src/dist /dist/dist
 COPY --from=builder /src/static/ /dist/static/ 
