@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  mobi-ebooks-dev:
+    container_name: mobi-ebooks-dev
+    build: 
+      context: ../../
+      dockerfile: docker/dev/Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000 
+    volumes:
+      - ../../:/src 
+      - ../../media:/mnt/media

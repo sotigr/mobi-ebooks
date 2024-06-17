@@ -1,0 +1,51 @@
+{{template "DocumentStart" .}}
+
+<div class="p-2">
+    <div class="my-dropzone dropzone mb-10">
+    </div>
+    <div class="border border-black"></div>
+    <div class="mb-3 mt-10">
+        <strong>Mobi Download List</strong>
+    </div> 
+    {{range .Props.Entries}} 
+        <a href="/api/read/?path={{.}}" class="btn btn-primary">
+            <div class="py-2 border-2 border-black mb-3 px-5">{{.}}</div>
+        </a>
+    {{end}}
+</div>
+
+<script>
+    function loadDropZone() {
+        let ele = document.querySelector("div.my-dropzone")
+        ele.classList.add("dropzone")
+
+        let dropzone = undefined;
+        try {
+            dropzone = new Dropzone("div.my-dropzone", {
+                url: "/api/upload/",
+                parallelUploads: 3,
+                paramName: "file",
+                maxFilesize: 1024 * 5,
+            });
+        } catch (ex) { 
+            location.reload()
+        }
+
+        if (dropzone != undefined) {
+            dropzone.on("sending", function (file, xhr, formData) {
+                // Will send the filesize along with the file as POST data.
+                formData.append("path", " ");
+                formData.append("name", file.name)
+            });
+            dropzone.on("complete", function () {
+                if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                    let b64Str = " "
+                    location.reload()
+                }
+            })
+        }
+
+    } 
+    loadDropZone(); 
+</script>
+{{template "DocumentEnd" .}}

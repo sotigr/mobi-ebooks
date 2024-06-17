@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  mobi-ebooks:
+    container_name: mobi-ebooks
+    image: sotig/mobi-ebooks
+    build: 
+      context: ../../
+      dockerfile: docker/prod/Dockerfile   

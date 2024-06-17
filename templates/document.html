@@ -1,0 +1,24 @@
+{{define "DocumentStart"}}
+<!DOCTYPE html>
+<html class="text-black"> 
+    <head>
+        <meta charset='utf-8' />
+        <meta http-equiv='X-UA-Compatible' content='IE=edge' /> 
+
+        <meta name='viewport' content='width=device-width, initial-scale=1' />  
+  
+        <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />  
+ 
+        <link rel="stylesheet" href="/static/.dist/styles.css" />  
+    
+        <script src="/static/js/dropzone.min.js"></script> 
+        {{if .Props.ExtraHead}}
+        {{.Props.ExtraHead}}
+        {{end}} 
+    </head> 
+    <body>   
+        {{end}}
+        {{define "DocumentEnd"}}      
+    </body> 
+</html>
+{{end}}
