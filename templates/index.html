@@ -15,15 +15,30 @@
     <div class="border border-black"></div>
     <div class="mb-3 mt-10">
         <strong>Download List</strong>
-    </div> 
-    {{range .Props.Entries}} 
-        <a href="/api/read/?path={{.}}" class="btn btn-primary">
-            <div class="py-2 border-2 border-black mb-3 px-5 bg-white">{{.}}</div>
+    </div>
+    <style>
+        .trash {
+            background-image: url('/static/trash-solid.svg');
+            background-size: 80% 80%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+    {{range .Props.Entries}}
+
+    <div class="py-2 border-2 border-black mb-3 px-5 bg-white flex ">
+        <a href="/api/read/?path={{.}}&folder={{$.Props.Folder}}"  class="flex-1 underline">
+           {{.}}  
         </a>
+        <div onclick="deleteFile('{{.}}')" class="rounded-md border-2 border-black w-6 h-6 cursor-pointer trash">
+        </div>
+    </div>
+
     {{end}}
 </div>
 
 <script>
+    var folder = "{{.Props.Folder}}"
     function loadDropZone() {
         let ele = document.querySelector("div.my-dropzone")
         ele.classList.add("dropzone")
@@ -36,15 +51,16 @@
                 paramName: "file",
                 maxFilesize: 1024 * 5,
             });
-        } catch (ex) { 
+        } catch (ex) {
             location.reload()
         }
 
         if (dropzone != undefined) {
             dropzone.on("sending", function (file, xhr, formData) {
                 // Will send the filesize along with the file as POST data.
-                let output = document.getElementById("output-select"); 
+                let output = document.getElementById("output-select");
                 formData.append("output", output.value);
+                formData.append("folder", folder);
                 // formData.append("name", file.name)
             });
             dropzone.on("complete", function () {
@@ -55,7 +71,15 @@
             })
         }
 
-    } 
-    loadDropZone(); 
+    }
+    loadDropZone();
+
+    function deleteFile(path) {
+        if (confirm("Are you sure to delete this file?")){
+            fetch(`/api/delete/?path=${path}&folder=${folder}`).then((res)=>{ 
+                location.reload()
+            })
+        }
+    }
 </script>
 {{template "DocumentEnd" .}}

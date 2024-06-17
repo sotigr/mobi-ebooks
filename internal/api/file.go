@@ -23,6 +23,7 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	folder := r.FormValue("folder")
 
 	outputFormat := r.FormValue("output")
 	if outputFormat == "" {
@@ -59,9 +60,12 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	ext := filepath.Ext(name)
 
+	saveDir := filepath.Join("/mnt/media/", folder)
+	os.MkdirAll(saveDir, os.ModePerm)
+
 	_, _, err = cli.RunThroughCli(context.Background(), "ebook-convert", []string{
 		temp,
-		filepath.Join("/mnt/media/", name[:len(name)-len(ext)]+"."+outputFormat),
+		filepath.Join(saveDir, name[:len(name)-len(ext)]+"."+outputFormat),
 	})
 
 	if err != nil {
@@ -77,7 +81,8 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 func (api *Api) ReadHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := r.URL.Query().Get("path")
-	f, err := os.Open(filepath.Join("/mnt/media/", filePath))
+	folder := r.URL.Query().Get("folder")
+	f, err := os.Open(filepath.Join("/mnt/media/", folder, filePath))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -93,4 +98,16 @@ func (api *Api) ReadHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error reading file", err.Error())
 		return
 	}
+}
+
+func (api *Api) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	filePath := r.URL.Query().Get("path")
+	folder := r.URL.Query().Get("folder")
+	err := os.RemoveAll(filepath.Join("/mnt/media/", folder, filePath))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
 }
