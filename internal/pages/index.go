@@ -37,7 +37,7 @@ func (p IndexPage) Props(r *http.Request, meta *vrahos.MetaData) (any, map[strin
 	}
 
 	return IndexProps{
-		ExtraHead: `<title>Convert documents to .mobi</title>`,
+		ExtraHead: `<title>Convert documents to ebooks</title>`,
 		Error:     err != nil,
 		Entries:   list,
 	}, nil

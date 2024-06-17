@@ -1,15 +1,24 @@
 {{template "DocumentStart" .}}
 
 <div class="p-2">
+    <div>
+        <strong>Output format</strong>
+    </div>
+    <select id="output-select" class="py-2 border-2 border-black mb-3 px-5 bg-white">
+        <option value="mobi">MOBI</option>
+        <option value="azw3">AZW3</option>
+        <option value="epub">EPUB</option>
+        <option value="pdf">PDF</option>
+    </select>
     <div class="my-dropzone dropzone mb-10">
     </div>
     <div class="border border-black"></div>
     <div class="mb-3 mt-10">
-        <strong>Mobi Download List</strong>
+        <strong>Download List</strong>
     </div> 
     {{range .Props.Entries}} 
         <a href="/api/read/?path={{.}}" class="btn btn-primary">
-            <div class="py-2 border-2 border-black mb-3 px-5">{{.}}</div>
+            <div class="py-2 border-2 border-black mb-3 px-5 bg-white">{{.}}</div>
         </a>
     {{end}}
 </div>
@@ -34,8 +43,9 @@
         if (dropzone != undefined) {
             dropzone.on("sending", function (file, xhr, formData) {
                 // Will send the filesize along with the file as POST data.
-                formData.append("path", " ");
-                formData.append("name", file.name)
+                let output = document.getElementById("output-select"); 
+                formData.append("output", output.value);
+                // formData.append("name", file.name)
             });
             dropzone.on("complete", function () {
                 if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {

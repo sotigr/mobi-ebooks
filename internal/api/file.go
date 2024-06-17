@@ -1,13 +1,15 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"mime"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
+
+	"mobi.ebooks/internal/cli"
 )
 
 func cleanUp(path string) {
@@ -22,6 +24,10 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	outputFormat := r.FormValue("output")
+	if outputFormat == "" {
+		outputFormat = "mobi"
+	}
 	file, headers, err := r.FormFile("file")
 
 	name := headers.Filename
@@ -52,8 +58,13 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ext := filepath.Ext(name)
-	cmd := exec.Command("ebook-convert", temp, filepath.Join("/mnt/media/", name[:len(name)-len(ext)]+".mobi"))
-	if err := cmd.Run(); err != nil {
+
+	_, _, err = cli.RunThroughCli(context.Background(), "ebook-convert", []string{
+		temp,
+		filepath.Join("/mnt/media/", name[:len(name)-len(ext)]+"."+outputFormat),
+	})
+
+	if err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
