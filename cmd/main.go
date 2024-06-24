@@ -23,7 +23,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	vrahos.Vrahos(mux, components, nil, &vrahos.MetaData{}, RegisterMiddleware)
+	vrahos.Vrahos(mux, components, &vrahos.MetaData{}, RegisterMiddleware)
 
 	vApi := api.NewApi()
 	api.MakeRouter(mux, vApi)
