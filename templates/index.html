@@ -1,5 +1,37 @@
 {{template "DocumentStart" .}}
 
+<style>
+    .star {
+        background-image: url('/static/star-solid.svg');
+    }
+
+    .star-empty {
+        background-image: url('/static/star-regular.svg');
+    }
+
+    .trash {
+        background-image: url('/static/trash-solid.svg');
+
+    }
+
+    .icon {
+        background-size: 80% 80%;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
+
+{{if .Props.Folder }}
+<div class="px-2 pt-2 flex items-center justify-end text-lg">
+    {{if Indexisfeatured .Props.Folder .Props.Folders }}
+    <div onclick="removeFeaturedFolder()" class="w-6 h-6 cursor-pointer icon star"></div>
+    {{else}}
+    <div onclick="addFeaturedFolder()" class="w-6 h-6 cursor-pointer icon star-empty"></div>
+    {{end}}
+    Folder: <strong>{{.Props.Folder}}</strong>
+</div>
+{{end}}
+
 <div class="p-2">
     <div>
         <strong>Output format</strong>
@@ -12,25 +44,34 @@
     </select>
     <div class="my-dropzone dropzone mb-10">
     </div>
-    <div class="border border-black"></div>
-    <div class="mb-3 mt-10">
+    <div class="border border-black mb-5"></div>
+
+    <form class="flex items-center"
+        onsubmit="event.preventDefault(); location.href='?folder='+document.getElementById('flodertb').value">
+        <input id="flodertb" type="text" id="title" class="border border-black py-1 px-4 bg-white w-100"
+            placeholder="Folder name">
+        <button class="bg-black text-white py-1 px-4" type="submit">GO</button>
+        <div class="flex-1"></div> 
+        <strong class="pr-5">Featured:</strong>
+        <select id="category-select" onchange="location.href='?folder='+this.value" class="py-2 border-2 border-black w-150  px-5 bg-white">
+            <option value="">Home</option>
+            {{range .Props.Folders}}
+            <option value="{{.Name}}" {{if Indexisequal .Name $.Props.Folder}} selected="selected"{{end}}>{{.Name}}</option>
+            {{end}}
+        </select>
+    </form>
+
+    <div class="mb-3 mt-5">
         <strong>Download List</strong>
     </div>
-    <style>
-        .trash {
-            background-image: url('/static/trash-solid.svg');
-            background-size: 80% 80%;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-    </style>
+
     {{range .Props.Entries}}
 
     <div class="py-2 border-2 border-black mb-3 px-5 bg-white flex ">
-        <a href="/api/read/?path={{.}}&folder={{$.Props.Folder}}"  class="flex-1 underline">
-           {{.}}  
+        <a href="/api/read/?path={{.}}&folder={{$.Props.Folder}}" class="flex-1 underline">
+            {{.}}
         </a>
-        <div onclick="deleteFile('{{.}}')" class="rounded-md border-2 border-black w-6 h-6 cursor-pointer trash">
+        <div onclick="deleteFile('{{.}}')" class="rounded-md border-2 border-black w-6 h-6 cursor-pointer icon trash">
         </div>
     </div>
 
@@ -72,14 +113,30 @@
         }
 
     }
-    loadDropZone();
+    try {
+        loadDropZone();
+    } catch (ex) {
+
+    }
 
     function deleteFile(path) {
-        if (confirm("Are you sure to delete this file?")){
-            fetch(`/api/delete/?path=${path}&folder=${folder}`).then((res)=>{ 
+        if (confirm("Are you sure to delete this file?")) {
+            fetch(`/api/delete/?path=${path}&folder=${folder}`).then((res) => {
                 location.reload()
             })
         }
+    }
+
+    function addFeaturedFolder( ) {
+        fetch(`/api/folder/add/?folder=${folder}`).then((res) => {
+            location.reload()
+        })
+    }
+
+    function removeFeaturedFolder( ) {
+        fetch(`/api/folder/delete/?folder=${folder}`).then((res) => {
+            location.reload()
+        })
     }
 </script>
 {{template "DocumentEnd" .}}

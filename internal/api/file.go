@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"mobi.ebooks/internal/cli"
+	"mobi.ebooks/internal/tools"
 )
 
 func cleanUp(path string) {
@@ -24,6 +25,10 @@ func (api *Api) UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	folder := r.FormValue("folder")
+	if !tools.CheckFolder(folder) {
+		http.Error(w, "invalid folder", http.StatusInternalServerError)
+		return
+	}
 
 	outputFormat := r.FormValue("output")
 	if outputFormat == "" {
@@ -82,6 +87,10 @@ func (api *Api) ReadHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := r.URL.Query().Get("path")
 	folder := r.URL.Query().Get("folder")
+	if !tools.CheckFolder(folder) {
+		http.Error(w, "invalid folder", http.StatusInternalServerError)
+		return
+	}
 	f, err := os.Open(filepath.Join("/mnt/media/", folder, filePath))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -104,6 +113,10 @@ func (api *Api) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := r.URL.Query().Get("path")
 	folder := r.URL.Query().Get("folder")
+	if !tools.CheckFolder(folder) {
+		http.Error(w, "invalid folder", http.StatusInternalServerError)
+		return
+	}
 	err := os.RemoveAll(filepath.Join("/mnt/media/", folder, filePath))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
