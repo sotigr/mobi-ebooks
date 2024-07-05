@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/sotigr/vrahos"
 	"mobi.ebooks/internal/tools"
@@ -25,6 +26,7 @@ type IndexProps struct {
 	Entries   []string
 	Error     bool
 	Folders   []tools.Folder
+	IsKindle  bool
 }
 
 func (p IndexPage) Template() string {
@@ -71,5 +73,6 @@ func (p IndexPage) Props(r *http.Request, meta *vrahos.MetaData) (any, map[strin
 		Entries:   list,
 		Folder:    folder,
 		Folders:   tools.GetFeaturedFolders(),
+		IsKindle:  strings.Contains(r.UserAgent(), "Kindle"),
 	}, nil
 }

@@ -1,4 +1,6 @@
 @import "dropzone.css";
+@import  "normalize.css";
+
 *,input {
     outline: none!important;
 }
