@@ -55,17 +55,15 @@ func (p IndexPage) Props(r *http.Request, meta *vrahos.MetaData) (any, map[strin
 
 	entries, err := os.ReadDir(filepath.Join("/mnt/media", folder))
 
-	list := make([]string, len(entries))
-	cn := 0
-	for i, e := range entries {
+	list := make([]string, 0, len(entries))
+
+	for _, e := range entries {
 		name := e.Name()
 		if !e.IsDir() && name != "folders.json" {
-			list[i] = name
-			cn++
+			list = append(list, name)
 		}
 
 	}
-	list = list[:cn]
 
 	return IndexProps{
 		ExtraHead: `<title>Convert documents to ebooks</title>`,
